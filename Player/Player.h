@@ -39,6 +39,8 @@ class Player {
 
 	//ワールド座標を取得
 	Vector3 GetWorldPosition2();
+	//ワールド座標を指定
+	Vector3 SetWorldPosition2(Vector3 player);
 
 	//衝突を検出したら呼び出されるコールバック関数
 	void OnCollision();

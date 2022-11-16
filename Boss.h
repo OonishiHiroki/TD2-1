@@ -35,7 +35,13 @@ public:
 
 	void Impact(Vector3 player);
 
+	void OnCollision();
+
 	Vector3 GetWorldPos();
+
+	int GetR() { return r; }
+
+	bool GetIsDead() { return isDead; }
 
 private:
 	//ワールド変換データ
@@ -62,4 +68,6 @@ private:
 	int attackTmp;
 	bool isImpact = false;
 	float speed = 0;
+	int r = 4;
+	bool isDead = false;
 };

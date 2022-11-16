@@ -191,3 +191,7 @@ void Boss::Impact(Vector3 player) {
 		isImpact = false;
 	}
 }
+
+void Boss::OnCollision(){
+
+}

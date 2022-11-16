@@ -34,7 +34,9 @@ void PlayerBullet::Update() {
 }
 
 void PlayerBullet::Draw(const ViewProjection& viewProjection) {
-	model_->Draw(worldTransform_, viewProjection, textureHandle_);
+	if (isDead_ == false) {
+		model_->Draw(worldTransform_, viewProjection, textureHandle_);
+	}
 }
 
 Vector3 PlayerBullet::GetWorldPosition() { 
@@ -49,7 +51,10 @@ Vector3 PlayerBullet::GetWorldPosition() {
 }
 
 void PlayerBullet::OnCollision() {
-
 	//デスフラグ
 	isDead_ = true;
+}
+
+bool PlayerBullet::CheckHit(Vector3 boss) {
+	return false;
 }

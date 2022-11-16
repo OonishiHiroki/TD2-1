@@ -9,6 +9,7 @@
 #include "PlayerBullet.h"
 #include <memory>
 #include <list>
+#include "Boss.h"
 
 
 class Player {
@@ -21,7 +22,7 @@ class Player {
 	///< summary>
 	///‰Šú‰»
 	///</summary>
-	void Update(ViewProjection viewProjection_,Vector3 boss);
+	void Update(ViewProjection viewProjection_,Boss* boss);
 
 	///< summary>
 	///‰Šú‰»
@@ -71,6 +72,7 @@ public:
 	bool isJump = 0;
 	float airPower = 1.0f;
 	Vector3 viewLength;
+	int r = 2;
 
 	//ˆÚ“®
 	Vector3 yTmpVec = { 0, 1, 0 };

@@ -1,5 +1,6 @@
 #include "Player.h"
 #include <math.h>
+#include "Boss.h"
 
 void Player::Initialize(Model* model, uint32_t textureHandle) {
 	//NULLポインタチェック
@@ -16,7 +17,7 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 	worldTransform_.translation_ = { 0, 0, -10 };
 }
 
-void Player::Update(ViewProjection viewProjection_, Vector3 boss) {
+void Player::Update(ViewProjection viewProjection_, Boss* boss) {
 
 
 	//移動
@@ -73,6 +74,26 @@ void Player::Update(ViewProjection viewProjection_, Vector3 boss) {
 	}
 
 
+	//弾と敵の当たり判定
+	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
+		Vector3 posA = bullet->GetWorldPosition();
+		//敵更新
+		Vector3 posB = boss->GetWorldPos();
+
+		float a = std::pow(posB.x - posA.x, 2.0f) + std::pow(posB.y - posA.y, 2.0f) +
+			std::pow(posB.z - posA.z, 2.0f);
+		float lenR = std::pow((boss->GetR() + bullet->GetR()), 2.0);
+
+		// 球と球の交差判定
+		if (boss->GetIsDead() == false) {
+			if (a <= lenR) {
+				// 自キャラの衝突時コールバックを呼び出す
+				bullet->OnCollision();
+				// 敵弾の衝突時コールバックを呼び出す
+				boss->OnCollision();
+			}
+		}
+	}
 	//行列更新
 	AffinTrans::affin(worldTransform_);
 
@@ -88,7 +109,7 @@ void Player::Update(ViewProjection viewProjection_, Vector3 boss) {
 
 
 	//弾発射処理
-	Attack(viewProjection_, boss);
+	Attack(viewProjection_, boss->GetWorldPos());
 
 	//弾更新
 	//複数

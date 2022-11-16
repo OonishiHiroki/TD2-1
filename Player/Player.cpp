@@ -1,4 +1,5 @@
 #include "Player.h"
+#include <math.h>
 
 void Player::Initialize(Model* model, uint32_t textureHandle) {
 	//NULLポインタチェック
@@ -15,7 +16,7 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 	worldTransform_.translation_ = { 0, 0, -10 };
 }
 
-void Player::Update(ViewProjection viewProjection_,Vector3 boss) {
+void Player::Update(ViewProjection viewProjection_, Vector3 boss) {
 
 
 	//移動
@@ -24,7 +25,7 @@ void Player::Update(ViewProjection viewProjection_,Vector3 boss) {
 	//重力
 	if (jumpPower == 0) {
 		if (worldTransform_.translation_.y > 0) {
-			worldTransform_.translation_.y -= 0.3f;
+			worldTransform_.translation_.y -= 0.18f;
 		}
 		else if (worldTransform_.translation_.y <= 0) {
 			worldTransform_.translation_.y = 0.0f;
@@ -44,7 +45,7 @@ void Player::Update(ViewProjection viewProjection_,Vector3 boss) {
 		airPower = 1.0f;
 	}
 	else {
-		airPower = 0.7f;
+		airPower = 0.3f;
 	}
 
 	//ジャンプの力を徐々に強く
@@ -62,7 +63,7 @@ void Player::Update(ViewProjection viewProjection_,Vector3 boss) {
 	viewLength.length();
 	viewLength.normalize();
 	//カメラに近づきすぎないように
-	if (viewLength.z >= 0.067) {
+	if (viewLength.z >= fabs(0.08)) {
 		if (isPushZ == true) {
 			worldTransform_.translation_ -= move;
 		}
@@ -87,7 +88,7 @@ void Player::Update(ViewProjection viewProjection_,Vector3 boss) {
 
 
 	//弾発射処理
-	Attack(viewProjection_,boss);
+	Attack(viewProjection_, boss);
 
 	//弾更新
 	//複数
@@ -110,7 +111,7 @@ void Player::Draw(ViewProjection viewProjection_) {
 	}
 }
 
-void Player::Attack(ViewProjection viewProjection_,Vector3 boss) {
+void Player::Attack(ViewProjection viewProjection_, Vector3 boss) {
 	Vector3 bulletVecTmp = boss - worldTransform_.translation_;
 	bulletVecTmp.normalize();
 	//右ベクトル
@@ -174,6 +175,17 @@ Vector3 Player::GetWorldPosition2() {
 	worldPos.x = worldTransform_.matWorld_.m[3][0];
 	worldPos.y = worldTransform_.matWorld_.m[3][1];
 	worldPos.z = worldTransform_.matWorld_.m[3][2];
+
+	return worldPos;
+}
+
+Vector3 Player::SetWorldPosition2(Vector3 player) {
+	//ワールド座標を入れる変数
+	Vector3 worldPos;
+	//ワールド行列の平行移動成分
+	worldPos.x = player.x;
+	worldPos.y = player.y;
+	worldPos.z = player.z;
 
 	return worldPos;
 }

@@ -1,9 +1,12 @@
 #include "Boss.h"
+#include "Player.h"
 
 Boss::Boss() {
 	srand(time(NULL));
 	coolTime = 0;
 	attackTmp = 0;
+	isImpact = false;
+	speed = 0.3;
 }
 
 void Boss::Initialize(Model* model, uint32_t textureHandle) {
@@ -33,7 +36,11 @@ void Boss::Update(Vector3 player) {
 			worldTransform_.translation_.y = 3.0f;
 		}
 	}
-	Attack(player);
+	//ボスの行動を抽選
+	AttackPattern(player);
+	if (isImpact == true) {
+		Impact(player);
+	}
 
 	//行列更新
 	AffinTrans::affin(worldTransform_);
@@ -46,21 +53,25 @@ void Boss::Update(Vector3 player) {
 		worldTransform_.translation_.z);
 	debugText_->SetPos(50, 300);
 	debugText_->Printf(
-		"%d", attackNum);
+		"%f", speed);
 }
 
 void Boss::Draw(ViewProjection viewProjection_) {
 	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
+	if (isImpact == true) {
+		model_->Draw(bullet->worldTransform, viewProjection_, textureHandle_);
+	}
 }
 
-void Boss::Attack(Vector3 Player) {
+void Boss::AttackPattern(Vector3 player) {
 	switch (attackNum) {
 		//攻撃パターン抽選
 	case 0:
 		//抽選
 		coolTime++;
-		if (coolTime == 150) {
-			attackTmp = rand() % 3 + 1;
+		if (coolTime == 200) {
+			attackTmp = rand() % 2 + 1;
+			/*attackTmp = 1;*/
 		}
 
 		//シーン遷移のための変数初期化
@@ -70,9 +81,6 @@ void Boss::Attack(Vector3 Player) {
 			coolTime = 0;
 		}
 		else if (attackTmp == 2) {
-			coolTime = 0;
-		}
-		else if (attackTmp == 3) {
 			coolTime = 0;
 		}
 
@@ -100,6 +108,16 @@ void Boss::Attack(Vector3 Player) {
 		}
 
 		coolTime++;
+		if (coolTime >= 100) {
+			if (isImpact == false) {
+				bullet->worldTransform.Initialize();
+				bullet->worldTransform.scale_ = { 8,1,0.5 };
+				bullet->worldTransform.translation_ = { worldTransform_.translation_.x,-0.3,worldTransform_.translation_.z };
+				bullet->bulletTime = 0;
+				speed = 0.3;
+				isImpact = true;
+			}
+		}
 		if (coolTime == 120) {
 			coolTime = 0;
 			isJump = 0;
@@ -110,15 +128,6 @@ void Boss::Attack(Vector3 Player) {
 		break;
 
 	case 2:
-		coolTime++;
-		if (coolTime == 100) {
-			coolTime = 0;
-			attackNum = 0;
-			attackTmp = 0;
-		}
-		break;
-
-	case 3:
 		coolTime++;
 		if (coolTime == 100) {
 			coolTime = 0;
@@ -138,4 +147,47 @@ Vector3 Boss::GetWorldPos() {
 	worldPos.z = worldTransform_.matWorld_.m[3][2];
 
 	return worldPos;
+}
+
+void Boss::Impact(Vector3 player) {
+
+	//yの仮ベクトル
+	Vector3 yTmpVec = { 0, 1, 0 };
+	yTmpVec.normalize();
+	//正面仮ベクトル
+	Vector3  frontTmp = player - worldTransform_.translation_;
+	frontTmp.normalize();
+	//右ベクトル
+	Vector3  rightVec = yTmpVec.cross(frontTmp);
+	rightVec.normalize();
+	//正面ベクトル
+	Vector3  frontVec = rightVec.cross(yTmpVec);
+	frontVec.normalize();
+
+	if (bullet->bulletTime >= 50) {
+		if (speed < 0.8) {
+			speed += 0.025;
+		}
+	}
+
+	//弾を発射
+	/*bullet->worldTransform.translation_.z += speed;*/
+	bullet->worldTransform.translation_ += frontVec * speed;
+
+	//
+	if (bullet->worldTransform.scale_.y > 0.2) {
+		bullet->worldTransform.scale_.y -= 0.01;
+	}
+	bullet->worldTransform.scale_.x += 0.05;
+
+	//行列更新
+	AffinTrans::affin(bullet->worldTransform);
+	bullet->worldTransform.TransferMatrix();
+
+	//時間経過で弾を消す
+	bullet->bulletTime++;
+	if (bullet->bulletTime == 250) {
+		/*delete bullet;*/
+		isImpact = false;
+	}
 }

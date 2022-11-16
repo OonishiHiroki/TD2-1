@@ -8,10 +8,10 @@
 #include "ViewProjection.h"
 #include "Time.h"
 
-
-class Player;
-
-class GameScene;
+typedef struct Bullet {
+	WorldTransform worldTransform;
+	int bulletTime;
+};
 
 class Boss {
 public:
@@ -31,7 +31,9 @@ public:
 	///</summary>
 	void Draw(ViewProjection viewProjection_);
 
-	void Attack(Vector3 Player);
+	void AttackPattern(Vector3 player);
+
+	void Impact(Vector3 player);
 
 	Vector3 GetWorldPos();
 
@@ -46,6 +48,8 @@ private:
 	Input* input_ = nullptr;
 	DebugText* debugText_ = nullptr;
 
+	Bullet* bullet = new Bullet;
+
 	///------------------------------------------///
 	//ÉÅÉìÉoïœêî
 	int isJump = 0;
@@ -56,4 +60,6 @@ private:
 	float jumpPower = 0;
 	int waitTime = 0;
 	int attackTmp;
+	bool isImpact = false;
+	float speed = 0;
 };

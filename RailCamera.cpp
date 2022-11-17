@@ -1,9 +1,9 @@
 #include "RailCamera.h"
 
-void RailCamera::Initialize(const Vector3 position, const Vector3 rota) {
+void RailCamera::Initialize(const Vector3 position, const Vector3 rotation) {
 	//ワールドトランスフォームの初期設定
 	worldTransform_.translation_ = position;
-	worldTransform_.rotation_ = rota;
+	worldTransform_.rotation_ = rotation;
 	//ワールド変換の初期化
 	worldTransform_.Initialize();
 
@@ -22,16 +22,23 @@ void RailCamera::Update() {
 	//キャラクターの移動の速さ
 	const float kCharacterSpeed = 0.2f;
 
+	//switch (phase_) {
+	//	case Phase::rightCamera:
+	//	default:
+	//		//カメラの移動
+	//		viewProjection_.eye = { 0.0f,5.0f,-40.0f };
+	//}
+
 	//押した方向で移動ベクトルを変更
-	if (input_->PushKey(DIK_W)) {
-		move = {0, kCharacterSpeed, 0};
-	} else if (input_->PushKey(DIK_S)) {
-		move = {0, -kCharacterSpeed, 0};
+	if (input_->PushKey(DIK_UP)) {
+		move = {0, 0, kCharacterSpeed };
+	} else if (input_->PushKey(DIK_DOWN)) {
+		move = {0, 0, -kCharacterSpeed };
 	}
 	if (input_->PushKey(DIK_A)) {
-		move = {-kCharacterSpeed, 0, 0};
+		move = { -kCharacterSpeed, 0, 0 };
 	} else if (input_->PushKey(DIK_D)) {
-		move = {kCharacterSpeed, 0, 0};
+		move = { kCharacterSpeed, 0, 0 };
 	}
 
 	worldTransform_.translation_ += move;
@@ -53,6 +60,7 @@ void RailCamera::Update() {
 	worldTransform_.TransferMatrix();
 
 	viewProjection_.eye = worldTransform_.translation_;
+
 	//ワールド前方ベクトル
 	Vector3 forward(0, 0, 1);
 	//レールカメラの回転を反映
@@ -67,10 +75,9 @@ void RailCamera::Update() {
 	viewProjection_.UpdateMatrix();
 	viewProjection_.TransferMatrix();
 
-	debugText_->SetPos(50, 130);
+	debugText_->SetPos(50, 200);
 	debugText_->Printf(
 	  "eye:(%f,%f,%f)", viewProjection_.eye.x, viewProjection_.eye.y, viewProjection_.eye.z);
-
 }
 
 ViewProjection& RailCamera::GetViewProjection() { 
@@ -78,8 +85,6 @@ ViewProjection& RailCamera::GetViewProjection() {
 }
 
 WorldTransform* RailCamera::GetWorldPosition() { 
-    
-
 	return &worldTransform_;
 }
 

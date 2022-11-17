@@ -5,6 +5,12 @@
 #include "Input.h"
 #include "DebugText.h"
 
+enum class Phase {
+	rightCamera,
+	leftCamera,
+	upCamera
+};
+
 ///< summary>
 ///ƒŒ[ƒ‹ƒJƒƒ‰
 ///</summary>
@@ -33,5 +39,7 @@ class RailCamera {
 
 	Input* input_ = nullptr;
 	DebugText* debugText_ = nullptr;
+
+	//Phase phase_ = Phase::rightCamera;
 
 };

@@ -69,7 +69,7 @@ void Player::Update(ViewProjection viewProjection_, Boss* boss) {
 			worldTransform_.translation_ -= move;
 		}
 		else {
-			worldTransform_.translation_ += frontVec * 0.02;
+			worldTransform_.translation_ += frontVec * 0.02f;
 		}
 	}
 
@@ -213,7 +213,7 @@ Vector3 Player::SetWorldPosition2(Vector3 player) {
 
 void Player::OnCollision() {}
 
-void Player::setparent(WorldTransform* worldTransform) {
+void Player::SetParent(WorldTransform* worldTransform) {
 	worldTransform_.parent_ = worldTransform;
 }
 void Player::Move(ViewProjection viewProjection_) {

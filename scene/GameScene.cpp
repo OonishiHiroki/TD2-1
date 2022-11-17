@@ -80,7 +80,7 @@ void GameScene::Initialize() {
 	//target_.matWorld_ = MathUtility::Matrix4Identity();
 
 	//カメラ
-	viewProjection_.eye = { 0.0f, 2.5f, -30.0f };
+	viewProjection_.eye = { 0.0f, 4.0f, -40.0f };
 	viewProjection_.target = target_.translation_;
 
 	//ビュープロジェクションの初期化
@@ -102,6 +102,13 @@ void GameScene::Initialize() {
 	//スカイドームの初期化
 	skydome_->Initialize(modelSkydome_);
 
+	//レールカメラの生成
+	railCamera_ = new RailCamera();
+	//レールカメラの初期化
+	railCamera_->Initialize(Vector3(0.0f, 4.0f, -30.0f),Vector3(0.0f, 0.0f, 0.0f));
+	
+	//player_->SetParent(railCamera_->GetWorldPosition());
+
 	//ファイルの読み込み
 	LoadEnemyPopData();
 }
@@ -109,13 +116,21 @@ void GameScene::Initialize() {
 void GameScene::Update() {
 	player_->Update(viewProjection_,boss_);
 	boss_->Update(player_->GetWorldPosition2());
+	railCamera_->Update();
 
 	//カメラお試し
-	if (input_->PushKey(DIK_W)) {
+	if (input_->PushKey(DIK_UP)) {
 		viewProjection_.eye.z += 0.5;
-	}else if (input_->PushKey(DIK_S)) {
+	}else if (input_->PushKey(DIK_DOWN)) {
 		viewProjection_.eye.z -= 0.5;
 	}
+
+	/*if (input_->PushKey(DIK_LEFT)) {
+		viewProjection_.eye.x -= 0.5f;
+	}
+	else if (input_->PushKey(DIK_RIGHT)) {
+		viewProjection_.eye.x += 0.5f;
+	}*/
 	viewProjection_.UpdateMatrix();
 #pragma endregion
 }

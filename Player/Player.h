@@ -46,7 +46,7 @@ class Player {
 	//衝突を検出したら呼び出されるコールバック関数
 	void OnCollision();
 
-	void setparent(WorldTransform* worldTransform);
+	void SetParent(WorldTransform* worldTransform);
 
 	void ResetPlayer();
 
@@ -89,6 +89,9 @@ public:
 	float adJustMent = 0.5f;
 	//攻撃クールタイム
 	float coolTime = 0.0f;
+
+	//角度
+	float PI = 3.14f;
 
 	bool isPushZ = false;
 	//弾

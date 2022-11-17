@@ -24,7 +24,7 @@ public:
 	///< summary>
 	///‰Šú‰»
 	///</summary>
-	void Update(Vector3 player);
+	void Update(Vector3 player,Vector3 scale);
 
 	///< summary>
 	///‰Šú‰»
@@ -36,6 +36,8 @@ public:
 	void Impact(Vector3 player);
 
 	void OnCollision();
+
+	int CheckHit(Vector3 player,Vector3 scale);
 
 	Vector3 GetWorldPos();
 
@@ -70,4 +72,5 @@ private:
 	float speed = 0;
 	int r = 4;
 	bool isDead = false;
+	int num = 0;
 };

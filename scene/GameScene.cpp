@@ -115,7 +115,7 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 	player_->Update(viewProjection_,boss_);
-	boss_->Update(player_->GetWorldPosition2());
+	boss_->Update(player_->GetWorldPosition2(),player_->GetScale());
 	railCamera_->Update();
 
 	//カメラお試し

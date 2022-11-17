@@ -40,6 +40,7 @@ class Player {
 
 	//ワールド座標を取得
 	Vector3 GetWorldPosition2();
+	Vector3 GetScale();
 	//ワールド座標を指定
 	Vector3 SetWorldPosition2(Vector3 player);
 
@@ -55,7 +56,7 @@ class Player {
 
 	
 
-public:
+private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
 	//モデル

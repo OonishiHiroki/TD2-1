@@ -7,12 +7,6 @@
 #include <cassert>
 #include <affin.h>
 
-//当たり判定用AABB
-typedef struct AABB {
-	Vector3 min_;
-	Vector3 size_;
-};
-
 class PlayerBullet {
   public:
 	///< summary>
@@ -30,8 +24,6 @@ class PlayerBullet {
 	///</summary>
 	void Draw(const ViewProjection& viewProjection);
 
-	bool CheckHit(Vector3 boss);
-
 	////ワールド座標を取得
 	Vector3 GetWorldPosition();
 
@@ -40,7 +32,7 @@ class PlayerBullet {
 
 
   public:
-	bool InDead() const { return isDead_; }
+	bool IsDead() const { return isDead_; }
 	int GetR() { return r; }
 
   private:

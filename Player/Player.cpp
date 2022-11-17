@@ -85,7 +85,7 @@ void Player::Update(ViewProjection viewProjection_, Boss* boss) {
 		float lenR = std::pow((boss->GetR() + bullet->GetR()), 2.0);
 
 		// 球と球の交差判定
-		if (boss->GetIsDead() == false) {
+		if (bullet->IsDead() == false && boss->GetIsDead() == false) {
 			if (a <= lenR) {
 				// 自キャラの衝突時コールバックを呼び出す
 				bullet->OnCollision();
@@ -198,6 +198,17 @@ Vector3 Player::GetWorldPosition2() {
 	worldPos.z = worldTransform_.matWorld_.m[3][2];
 
 	return worldPos;
+}
+
+Vector3 Player::GetScale() {
+	//ワールド座標を入れる変数
+	Vector3 worldScale;
+	//ワールド行列の平行移動成分
+	worldScale.x = worldTransform_.matWorld_.m[0][0];
+	worldScale.y = worldTransform_.matWorld_.m[1][1];
+	worldScale.z = worldTransform_.matWorld_.m[2][2];
+
+	return worldScale;
 }
 
 Vector3 Player::SetWorldPosition2(Vector3 player) {

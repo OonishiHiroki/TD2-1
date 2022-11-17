@@ -54,7 +54,3 @@ void PlayerBullet::OnCollision() {
 	//デスフラグ
 	isDead_ = true;
 }
-
-bool PlayerBullet::CheckHit(Vector3 boss) {
-	return false;
-}

@@ -1,5 +1,4 @@
 #include "Boss.h"
-#include "Player.h"
 
 Boss::Boss() {
 	srand(time(NULL));
@@ -25,7 +24,7 @@ void Boss::Initialize(Model* model, uint32_t textureHandle) {
 	worldTransform_.scale_ = { 6,4,4 };
 }
 
-void Boss::Update(Vector3 player) {
+void Boss::Update(Vector3 player,Vector3 scale) {
 
 	//重力
 	if (isJump == 0) {
@@ -42,6 +41,13 @@ void Boss::Update(Vector3 player) {
 		Impact(player);
 	}
 
+	if (CheckHit(player, scale) == true) {
+		num = 1;
+	}
+	else {
+		num = 0;
+	}
+
 	//行列更新
 	AffinTrans::affin(worldTransform_);
 	worldTransform_.TransferMatrix();
@@ -53,7 +59,7 @@ void Boss::Update(Vector3 player) {
 		worldTransform_.translation_.z);
 	debugText_->SetPos(50, 300);
 	debugText_->Printf(
-		"%f", speed);
+		"%d", num);
 }
 
 void Boss::Draw(ViewProjection viewProjection_) {
@@ -70,8 +76,8 @@ void Boss::AttackPattern(Vector3 player) {
 		//抽選
 		coolTime++;
 		if (coolTime == 200) {
-			attackTmp = rand() % 2 + 1;
-			/*attackTmp = 1;*/
+			/*attackTmp = rand() % 2 + 1;*/
+			attackTmp = 1;
 		}
 
 		//シーン遷移のための変数初期化
@@ -171,7 +177,6 @@ void Boss::Impact(Vector3 player) {
 	}
 
 	//弾を発射
-	/*bullet->worldTransform.translation_.z += speed;*/
 	bullet->worldTransform.translation_ += frontVec * speed;
 
 	//
@@ -194,4 +199,38 @@ void Boss::Impact(Vector3 player) {
 
 void Boss::OnCollision(){
 
+}
+
+int Boss::CheckHit(Vector3 player,Vector3 scale) {
+	//弾座標
+	float blx = bullet->worldTransform.translation_.x - bullet->worldTransform.scale_.x;
+	float brx = bullet->worldTransform.translation_.x + bullet->worldTransform.scale_.x;
+	float bty = bullet->worldTransform.translation_.y + bullet->worldTransform.scale_.y;
+	float bby = bullet->worldTransform.translation_.y - bullet->worldTransform.scale_.y;
+	float bfz = bullet->worldTransform.translation_.z - bullet->worldTransform.scale_.z;
+	float bbz = bullet->worldTransform.translation_.z + bullet->worldTransform.scale_.z;
+	//プレイヤー座標
+	float plx = player.x - scale.x;
+	float prx = player.x + scale.x;
+	float pty = player.y + scale.y;
+	float pby = player.y - scale.y;
+	float pfz = player.z - scale.z;
+	float pbz = player.z + scale.z;
+	//右
+	if (blx < plx && brx > plx && bfz < pfz && pfz < bbz && bty > pby) {
+		return true;
+	}
+	else if (blx < plx && brx > plx && bfz < pbz && pbz < bbz && bty > pby) {
+		return true;
+	}
+	//左
+	else if (blx < prx && brx > prx && bfz < pfz && pfz < bbz && bty > pby) {
+		return true;
+	}
+	else if (blx < prx && brx > prx && bfz < pbz && pbz < bbz && bty > pby) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }

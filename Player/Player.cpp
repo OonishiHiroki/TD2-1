@@ -15,6 +15,15 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 	//ワールド変換の初期化
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = { 0, 0, -10 };
+
+	isHit = false;
+	hp = 5;
+	hitTime = 0;
+	coolTime = 0.0f;
+	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
+		// 自キャラの衝突時コールバックを呼び出す
+		bullet->OnCollision();
+	}
 }
 
 void Player::Update(ViewProjection viewProjection_, Boss* boss) {
@@ -94,6 +103,23 @@ void Player::Update(ViewProjection viewProjection_, Boss* boss) {
 			}
 		}
 	}
+
+	CheckHit(boss);
+
+	if (boss->CheckHit(worldTransform_.translation_, worldTransform_.scale_) == true) {
+		if (isHit == false) {
+			isHit = true;
+			hp--;
+		}
+	}
+	if (isHit == true) {
+		hitTime++;
+		if (hitTime == 15) {
+			isHit = false;
+			hitTime = 0;
+		}
+	}
+
 	//行列更新
 	AffinTrans::affin(worldTransform_);
 
@@ -125,7 +151,16 @@ void Player::Update(ViewProjection viewProjection_, Boss* boss) {
 }
 
 void Player::Draw(ViewProjection viewProjection_) {
-	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
+	if (IsDead() == false) {
+		if (isHit == false) {
+			model_->Draw(worldTransform_, viewProjection_, textureHandle_);
+		}
+		else {
+			if (hitTime % 3 != 0) {
+				model_->Draw(worldTransform_, viewProjection_, textureHandle_);
+			}
+		}
+	}
 	//弾描画
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
 		bullet->Draw(viewProjection_);
@@ -271,5 +306,29 @@ void Player::Move(ViewProjection viewProjection_) {
 	move* airPower;
 }
 
+int Player::IsDead() {
+	if (hp > 0) {
+		return false;
+	}
+	else {
+		return true;
+	}
+}
 
+void Player::CheckHit(Boss* boss) {
+	Vector3 posA = worldTransform_.translation_;
+	//敵更新
+	Vector3 posB = boss->GetWorldPos();
 
+	float a = std::pow(posB.x - posA.x, 2.0f) + std::pow(posB.y - posA.y, 2.0f) +
+		std::pow(posB.z - posA.z, 2.0f);
+	float lenR = std::pow((boss->GetR() + r), 2.0f);
+
+	// 球と球の交差判定
+	if (a <= lenR) {
+		if (isHit == false) {
+			isHit = true;
+			hp--;
+		}
+	}
+}

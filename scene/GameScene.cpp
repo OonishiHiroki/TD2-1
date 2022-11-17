@@ -4,6 +4,7 @@
 #include <random>
 #include <fstream>
 
+
 Matrix4 ScaleMatrix4(Matrix4 matWorld, Vector3 scale);
 Matrix4 RotationYMatrix4(Matrix4 matWorld, Vector3 rotation);
 Matrix4 MoveMatrix4(Matrix4 matWorld, Vector3 translation);
@@ -106,32 +107,65 @@ void GameScene::Initialize() {
 	railCamera_ = new RailCamera();
 	//レールカメラの初期化
 	railCamera_->Initialize(Vector3(0.0f, 4.0f, -30.0f),Vector3(0.0f, 0.0f, 0.0f));
-	
-	//player_->SetParent(railCamera_->GetWorldPosition());
 
 	//ファイルの読み込み
 	LoadEnemyPopData();
 }
 
 void GameScene::Update() {
-	player_->Update(viewProjection_,boss_);
-	boss_->Update(player_->GetWorldPosition2(),player_->GetScale());
-	railCamera_->Update();
+	switch (sceneNo_) {
+		//タイトル
+	case SceneNo::Title:
+		debugText_->SetPos(640, 360);
+		debugText_->Printf(
+			"Push SPACE");
+		if (input_->TriggerKey(DIK_SPACE)) {
+			sceneNo_ = SceneNo::Game;
+			player_->Initialize(model_, textureHandle_);
+			boss_->Initialize(model_, textureHandle2_);
+		}
+		break;
+		//ゲームシーン
+	case SceneNo::Game:
+		if (player_->IsDead() == false) {
+			player_->Update(viewProjection_, boss_);
+		}
+		else {
+			sceneNo_ = SceneNo::Over;
+		}
+		if (boss_->GetIsDead() == false) {
+			boss_->Update(player_->GetWorldPosition2(), player_->GetScale());
+		}
+		else {
+			sceneNo_ = SceneNo::Clear;
+		}
+		railCamera_->Update();
 
-	//カメラお試し
-	if (input_->PushKey(DIK_UP)) {
-		viewProjection_.eye.z += 0.5;
-	}else if (input_->PushKey(DIK_DOWN)) {
-		viewProjection_.eye.z -= 0.5;
+		viewProjection_.UpdateMatrix();
+		break;
+		//クリア
+	case SceneNo::Clear:
+		debugText_->SetPos(640, 360);
+		debugText_->Printf(
+			"Push SPACE");
+		if (input_->TriggerKey(DIK_SPACE)) {
+			sceneNo_ = SceneNo::Title;
+		}
+		break;
+		//ゲームオーバー
+	case SceneNo::Over:
+		debugText_->SetPos(640, 360);
+		debugText_->Printf(
+			"Push SPACE");
+		if (input_->TriggerKey(DIK_SPACE)) {
+			sceneNo_ = SceneNo::Title;
+		}
+		break;
 	}
 
-	/*if (input_->PushKey(DIK_LEFT)) {
-		viewProjection_.eye.x -= 0.5f;
-	}
-	else if (input_->PushKey(DIK_RIGHT)) {
-		viewProjection_.eye.x += 0.5f;
-	}*/
-	viewProjection_.UpdateMatrix();
+	debugText_->SetPos(50, 10);
+	debugText_->Printf(
+		"%d",sceneNo_);
 #pragma endregion
 }
 
@@ -179,10 +213,25 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	switch (sceneNo_) {
+	case SceneNo::Title:
+	
+		break;
+		//ゲームシーン
+	case SceneNo::Game:
+		skydome_->Draw(viewProjection_);
+		if (boss_->GetIsDead() == false) {
+			boss_->Draw(viewProjection_);
+		}
+		player_->Draw(viewProjection_);
+		break;
+	case SceneNo::Clear:
 
-	skydome_->Draw(viewProjection_);
-	boss_->Draw(viewProjection_);
-	player_->Draw(viewProjection_);
+		break;
+	case SceneNo::Over:
+
+		break;
+	}
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

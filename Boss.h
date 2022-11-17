@@ -33,7 +33,9 @@ public:
 
 	void AttackPattern(Vector3 player);
 
-	void Impact(Vector3 player);
+	void Impact();
+
+	void Tackle();
 
 	void OnCollision();
 
@@ -60,6 +62,10 @@ private:
 
 	///------------------------------------------///
 	//メンバ変数
+	Vector3 playerTmp;
+	Vector3 bossTmp;
+	//角度
+	float PI = 3.14f;
 	int isJump = 0;
 	//攻撃クールタイム
 	int coolTime;
@@ -72,5 +78,9 @@ private:
 	float speed = 0;
 	int r = 4;
 	bool isDead = false;
-	int num = 0;
+	int hp = 30;
+	bool isHit;
+	int hitTime;
+	int tackleTime;
+	bool isTackle;
 };

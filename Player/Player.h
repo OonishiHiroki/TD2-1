@@ -51,6 +51,10 @@ class Player {
 
 	void ResetPlayer();
 
+	void CheckHit(Boss* boss);
+
+	int IsDead();
+
 	//’eƒŠƒXƒg‚ğæ“¾
 	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
 
@@ -73,7 +77,7 @@ private:
 	bool isJump = 0;
 	float airPower = 1.0f;
 	Vector3 viewLength;
-	int r = 2;
+	double r = 2;
 
 	//ˆÚ“®
 	Vector3 yTmpVec = { 0, 1, 0 };
@@ -95,8 +99,12 @@ private:
 	float PI = 3.14f;
 
 	bool isPushZ = false;
+
+	bool isHit = false;
+	int hitTime = 0;
 	//’e
 	//•¡” 
 	std::list<std::unique_ptr<PlayerBullet>> bullets_;
 
+	int hp;
 };
